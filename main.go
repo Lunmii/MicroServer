@@ -1,7 +1,7 @@
 package main
 
 import (
-	"Microservice/Handlers"
+	"Microservice/product-api"
 	"context"
 	"log"
 	"net/http"
@@ -13,8 +13,8 @@ import (
 func main() {
 	l := log.New(os.Stdout, "product-api", log.LstdFlags)
 
-	hh := Handlers.NewHello(l)
-	gh := Handlers.NewGoodbye(l)
+	hh := product_api.NewHello(l)
+	gh := product_api.NewGoodbye(l)
 
 	sm := http.NewServeMux()
 	sm.Handle("/", hh)

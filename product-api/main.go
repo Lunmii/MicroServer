@@ -9,26 +9,30 @@ import (
 	"time"
 )
 
+var bindAddress = env.String("BIND_ADDRESS", false, ":9090", "Bind Address for the server")
+
 func main() {
 	env.Parsel()
 
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags)
 
 	//creating the handlers
+	hh := handlers.NewHello(l)
 	ph := handlers.NewProducts(l)
 
 	//creating a new servmux and registering the handlers
 	sm := http.NewServeMux()
+	sm := Handle("/", hh)
 	sm.Handle("/", ph)
 
 	//creating a new server
 	s := http.Server{
-		Addr:         *bindAddress,
-		Handler:      sm,
-		ErrorLog:     l,
-		ReadTimeout:  5 * time.Second,
-		WriteTimeout: 10 * time.Second,
-		IdleTimeout:  120 * time.Second,
+		Addr:         *bindAddress,      //configuring the bind address
+		Handler:      sm,                //setting the default handler
+		ErrorLog:     l,                 //setting the logger for the server
+		ReadTimeout:  5 * time.Second,   //maximum time to read request from the client
+		WriteTimeout: 10 * time.Second,  //maximum time to write response for the client
+		IdleTimeout:  120 * time.Second, //maximum time for connections using TCP Keep-Alive
 	}
 
 	// starting the server

@@ -1,4 +1,4 @@
-package Handlers
+package product_api
 
 import (
 	"log"

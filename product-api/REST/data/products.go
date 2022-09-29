@@ -16,8 +16,17 @@ type Product struct {
 	UpdatedOn   string  `json:"-"`
 	DeletedOn   string  `json:"-"`
 }
+
+func (p *Products) FromJSON(r io.Reader) error {
+	e := json.NewDecoder(r)
+	return e.Decode(p)
+}
+
+// Products is a collection of Product
 type Products []*Product
 
+// ToJSON serializing the contents of the collection to JSON
+// NewENCODER provides better performance than json.unmarshal as it dosen't have to buffer the output into an in memory slices of bytes, this reduces allocation and the overhead of the services
 func (p *Products) ToJSON(w io.Writer) error {
 	e := json.NewEncoder(w)
 	return e.Encode(p)
