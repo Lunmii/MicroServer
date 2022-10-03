@@ -7,6 +7,7 @@ import (
 	"time"
 )
 
+// Product defines the structure for an API product
 type Product struct {
 	ID          int     `json:"id"`
 	Name        string  `json:"name"`
@@ -18,7 +19,7 @@ type Product struct {
 	DeletedOn   string  `json:"-"`
 }
 
-func (p *Products) FromJSON(r io.Reader) error {
+func (p *Product) FromJSON(r io.Reader) error {
 	e := json.NewDecoder(r)
 	return e.Decode(p)
 }
@@ -26,29 +27,36 @@ func (p *Products) FromJSON(r io.Reader) error {
 // Products is a collection of Product
 type Products []*Product
 
-// ToJSON serializing the contents of the collection to JSON
-// NewENCODER provides better performance than json.unmarshal as it dosen't have to buffer the output into an in memory slices of bytes, this reduces allocation and the overhead of the services
+// ToJSON serializes the contents of the collection to JSON
+// NewEncoder provides better performance than json.Unmarshal as it does not
+// have to buffer the output into an in memory slice of bytes
+// this reduces allocations and the overheads of the service
+//
+// https://golang.org/pkg/encoding/json/#NewEncoder
 func (p *Products) ToJSON(w io.Writer) error {
 	e := json.NewEncoder(w)
 	return e.Encode(p)
 }
 
-func GetProducts() []*Product {
+// GetProducts returns a list of products
+func (p *Products) GET  {
 	return productList
 }
 
-func AddProduct(p *Product) {
+func (p Products) AddProducts() {
 	p.ID = getNextID()
 	productList = append(productList, p)
 }
 
-func UpdateProduct(id int, p *Product) error {
+func (p Products) UpdateProduct(rw) error {
 	_, pos, err := findProduct(id)
 	if err != nil {
 		return err
 	}
+
 	p.ID = id
 	productList[pos] = p
+
 	return nil
 }
 
@@ -60,6 +68,7 @@ func findProduct(id int) (*Product, int, error) {
 			return p, i, nil
 		}
 	}
+
 	return nil, -1, ErrProductNotFound
 }
 
@@ -68,16 +77,25 @@ func getNextID() int {
 	return lp.ID + 1
 }
 
+// productList is a hard coded list of products for this
+// example data source
 var productList = []*Product{
 	&Product{
 		ID:          1,
 		Name:        "Latte",
-		Description: "Fronthy milky coffee",
+		Description: "Frothy milky coffee",
 		Price:       2.45,
-		SKU:         "12345asd",
+		SKU:         "abc323",
 		CreatedOn:   time.Now().UTC().String(),
 		UpdatedOn:   time.Now().UTC().String(),
-		DeletedOn:   time.Now().UTC().String(),
 	},
-	&Product{},
+	&Product{
+		ID:          2,
+		Name:        "Espresso",
+		Description: "Short and strong coffee without milk",
+		Price:       1.99,
+		SKU:         "fjd34",
+		CreatedOn:   time.Now().UTC().String(),
+		UpdatedOn:   time.Now().UTC().String(),
+	},
 }

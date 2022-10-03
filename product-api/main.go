@@ -2,6 +2,7 @@ package product_api
 
 import (
 	"Microservice/product-api/handlers"
+	"github.com/gorilla/mux"
 	"log"
 	"net/http"
 	"os"
@@ -17,13 +18,21 @@ func main() {
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags)
 
 	//creating the handlers
-	hh := handlers.NewHello(l)
 	ph := handlers.NewProducts(l)
 
-	//creating a new servmux and registering the handlers
-	sm := http.NewServeMux()
-	sm := Handle("/", hh)
-	sm.Handle("/", ph)
+	//creating a new server mux and registering the handlers
+	sm := mux.NewRouter()
+
+	getRouter := sm.Methods(http.MethodGet).Subrouter()
+	getRouter.HandleFunc("/", ph.GetProducts)
+
+	putRouter := sm.Methods(http.MethodPut).Subrouter()
+	putRouter.HandleFunc("/{id:[0-9]+}", ph.UpdateProducts)
+	putRouter.Use(ph.MiddlewareValidateProduct)
+
+	postRouter := sm.Methods(http.MethodPost).Subrouter()
+	postRouter.HandleFunc("/", ph.AddProduct)
+	postRouter.Use(ph.MiddlewareValidateProduct)
 
 	//creating a new server
 	s := http.Server{
