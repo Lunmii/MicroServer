@@ -3,6 +3,7 @@ package product_api
 import (
 	"Microservice/product-api/handlers"
 	"github.com/gorilla/mux"
+	"github.com/nicholasjackson/env"
 	"log"
 	"net/http"
 	"os"
@@ -13,7 +14,7 @@ import (
 var bindAddress = env.String("BIND_ADDRESS", false, ":9090", "Bind Address for the server")
 
 func main() {
-	env.Parsel()
+	env.Parse()
 
 	l := log.New(os.Stdout, "products-api ", log.LstdFlags)
 
