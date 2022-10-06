@@ -1,4 +1,4 @@
-package product_api
+package main
 
 import (
 	"Microservice/product-api/handlers"
